@@ -3,393 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybercrime Reporting Bot</title>
+    <title>Cybercrime Reporting Service</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(45deg, #e0e7ff, #dbeafe, #e0f2fe, #dbeafe);
-            background-size: 600% 600%;
-            animation: swirlBackground 20s ease infinite;
+            font-family: 'Roboto', sans-serif;
+            background: #f4f7fa;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            color: #333;
-            transition: all 0.5s;
-            overflow: hidden;
-        }
-        .dark-mode {
-            background: linear-gradient(45deg, #0f172a, #1e293b, #334155, #1e293b);
-            color: #f1f5f9;
-        }
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
-            animation: particleFlow 30s linear infinite;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
         }
         .chat-container {
             background: white;
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px;
-            padding: 25px;
-            position: relative;
-            transition: background 0.5s;
-            animation: containerBounce 0.5s ease-out;
+            max-width: 700px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
         }
-        .dark-mode .chat-container {
-            background: #1e293b;
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: #1e3a8a;
-            animation: headerGlow 2s infinite alternate;
-        }
-        .dark-mode .header h1 {
-            color: #60a5fa;
+            color: #2b6cb0;
         }
         .progress-bar {
             display: flex;
             justify-content: center;
-            margin-bottom: 25px;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
         }
         .progress-step {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #e2e8f0;
-            margin: 0 12px;
+            color: #718096;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 600;
-            transition: all 0.4s;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background 0.3s ease, transform 0.5s ease;
+            margin: 0 12px;
+            z-index: 1;
         }
         .progress-step.active {
-            background: #3b82f6;
-            box-shadow: 0 0 15px #3b82f6, 0 0 25px #3b82f6;
-            animation: spinAndGlow 1s infinite;
+            background: #2b6cb0;
+            color: white;
+            transform: rotate(360deg);
+        }
+        .progress-connector {
+            position: absolute;
+            height: 2px;
+            background: #e2e8f0;
+            top: 50%;
+            left: 40px;
+            right: 40px;
+            transform: translateY(-50%);
+            transition: background 0.3s ease;
+        }
+        .progress-connector.active {
+            background: #2b6cb0;
         }
         #chat-box {
-            max-height: 450px;
+            max-height: 400px;
             overflow-y: auto;
-            padding: 15px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .dark-mode #chat-box {
-            border-color: #4b5563;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
         }
         .message {
-            margin: 12px 0;
-            padding: 15px 20px;
-            border-radius: 20px;
-            opacity: 0;
-            animation: messageBurst 0.6s forwards;
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
         .bot-message {
-            background: #f1f5f9;
-            color: #333;
-            transform-origin: left;
-        }
-        .dark-mode .bot-message {
-            background: #334155;
-            color: #f1f5f9;
+            background: #edf2f7;
+            color: #4a5568;
         }
         .user-message {
-            background: #3b82f6;
+            background: #2b6cb0;
             color: white;
-            margin-left: 25%;
-            transform-origin: right;
-        }
-        .dark-mode .user-message {
-            background: #2563eb;
+            margin-left: auto;
+            text-align: right;
         }
         #typing-indicator {
             display: none;
-            color: #9ca3af;
+            color: #718096;
             font-style: italic;
+            margin-top: 10px;
         }
-        .typing-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #3b82f6;
-            border-radius: 50%;
-            margin: 0 5px;
-            animation: bounceDot 1s infinite;
-        }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        #chat-form {
+        .input-area {
+            margin-top: 20px;
             display: flex;
-            margin-top: 25px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        #message {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
+        #message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+        #message-input:focus {
+            border-color: #2b6cb0;
             outline: none;
-            transition: all 0.3s;
         }
-        #message:focus {
-            border-color: #3b82f6;
-            transform: scale(1.05) translateX(5px);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-            animation: wiggle 0.5s infinite;
-        }
-        .dark-mode #message {
-            border-color: #4b5563;
-            color: #f1f5f9;
-        }
-        #send-btn {
-            background: #3b82f6;
+        #send-button {
+            padding: 10px 20px;
+            background: #2b6cb0;
             color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            margin-left: 15px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.3s ease;
         }
-        #send-btn:hover {
-            background: #2563eb;
-            box-shadow: 0 0 20px #3b82f6;
-            transform: scale(1.1);
+        #send-button:hover {
+            background: #1c528a;
         }
-        #send-btn:active {
-            transform: scale(0.95);
-            animation: bounceButton 0.3s;
+        .option-btn {
+            padding: 8px 16px;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
-        #send-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
+        .option-btn:hover {
+            background: #cbd5e0;
         }
-        #send-btn:active::after {
-            width: 150px;
-            height: 150px;
-        }
-        .footer {
-            margin-top: 25px;
-            color: #666;
-            animation: fadeInFooter 1s forwards;
-        }
-        .dark-mode .footer {
-            color: #9ca3af;
-        }
-        .custom-cursor {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.8), transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            transition: transform 0.1s;
-            z-index: 1000;
-        }
-        @keyframes swirlBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        @keyframes particleFlow {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-100vh); }
-        }
-        @keyframes containerBounce {
-            0% { transform: translateY(-20px); }
-            50% { transform: translateY(10px); }
-            100% { transform: translateY(0); }
-        }
-        @keyframes headerGlow {
-            0% { text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-            100% { text-shadow: 0 0 15px rgba(59, 130, 246, 0.8); }
-        }
-        @keyframes spinAndGlow {
-            0% { transform: rotate(0deg); box-shadow: 0 0 5px #3b82f6; }
-            50% { transform: rotate(180deg); box-shadow: 0 0 25px #3b82f6; }
-            100% { transform: rotate(360deg); box-shadow: 0 0 5px #3b82f6; }
-        }
-        @keyframes messageBurst {
-            0% { opacity: 0; transform: scale(0.5) rotate(10deg); }
-            50% { opacity: 1; transform: scale(1.1) rotate(-5deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
-        }
-        @keyframes bounceDot {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px) scale(1.2); }
-        }
-        @keyframes wiggle {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-        @keyframes bounceButton {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(0.95); }
-        }
-        @keyframes fadeInFooter {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="relative">
-    <div class="particles"></div>
-    <div class="custom-cursor" id="cursor"></div>
-    <button id="theme-toggle" class="absolute top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-all duration-300 hover:scale-110">
-        <svg class="h-6 w-6 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-    </button>
+<body>
     <div class="chat-container">
-        <div class="header text-center mb-6">
-            <h1>Cybercrime Reporting Bot</h1>
+        <div class="header">
+            <h1>Cybercrime Reporting Service</h1>
         </div>
         <div class="progress-bar">
-            <div class="progress-step active">1</div>
-            <div class="progress-step">2</div>
-            <div class="progress-step">3</div>
-            <div class="progress-step">4</div>
-            <div class="progress-step">5</div>
-            <div class="progress-step">6</div>
+            <div class="progress-connector"></div>
+            <div class="progress-step active" data-step="0">1</div>
+            <div class="progress-step" data-step="1">2</div>
+            <div class="progress-step" data-step="2">3</div>
+            <div class="progress-step" data-step="3">4</div>
+            <div class="progress-step" data-step="4">5</div>
+            <div class="progress-step" data-step="5">6</div>
+            <div class="progress-step" data-step="6">7</div>
+            <div class="progress-step" data-step="7">8</div>
+            <div class="progress-step" data-step="8">9</div>
+            <div class="progress-step" data-step="9">10</div>
         </div>
         <div id="chat-box">
             <div class="message bot-message">
-                Welcome to the Cybercrime Reporting Bot! Let’s start with your name (or a username):
+                Welcome to the Cybercrime Reporting Service. Please login (username|password) or type 'register' to sign up:
             </div>
         </div>
-        <div id="typing-indicator" class="typing-indicator">
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
+        <div id="typing-indicator">Typing...</div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Type your response here..." autocomplete="off">
+            <button id="send-button" onclick="sendMessage('next')">Send</button>
         </div>
-        <form id="chat-form" class="flex items-center">
-            <input type="text" id="message" placeholder="Type here..." autocomplete="off" class="flex-grow">
-            <button type="submit" id="send-btn" class="text-white">Send</button>
-        </form>
-    </div>
-    <div class="footer text-center">
-        <p>© 2023 Cybercrime Reporting Agency | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a></p>
+        <div class="mt-2 flex gap-2 flex-wrap" id="quick-options"></div>
     </div>
 
     <script>
-        const chatBox = document.getElementById('chat-box');
-        const form = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const progressSteps = document.querySelectorAll('.progress-step');
-        const themeToggle = document.getElementById('theme-toggle');
-        const cursor = document.getElementById('cursor');
-        let currentStep = 'username';
-        let stepIndex = 0;
+        let currentState = 0; // LOGIN state
+        const stateMap = { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10 }; // Maps states to progress steps
 
-        // Theme toggle with animation
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            themeToggle.style.transform = 'rotate(360deg)';
-            setTimeout(() => themeToggle.style.transform = 'rotate(0deg)', 300);
-            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
-        // Custom cursor
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = `${e.pageX}px`;
-            cursor.style.top = `${e.pageY}px`;
-        });
-        document.querySelectorAll('#send-btn, #message').forEach(el => {
-            el.addEventListener('mouseover', () => cursor.style.transform = 'scale(1.5)');
-            el.addEventListener('mouseout', () => cursor.style.transform = 'scale(1)');
-        });
-
-        // Update progress bar
-        function updateProgress(index) {
-            progressSteps.forEach((step, i) => {
-                if (i < index) step.classList.add('active');
-                else step.classList.remove('active');
-            });
-            stepIndex = index;
-        }
-
-        // Add message with animation
-        function addMessage(text, isUser) {
-            const messageClass = isUser ? 'user-message' : 'bot-message';
+        function addMessage(text, type = 'bot') {
+            const chatBox = document.getElementById('chat-box');
             const message = document.createElement('div');
-            message.className = `message ${messageClass}`;
+            message.className = `message ${type}-message`;
             message.textContent = text;
             chatBox.appendChild(message);
+            gsap.from(message, { opacity: 0, y: 10, duration: 0.5, ease: 'power1.out' });
             chatBox.scrollTop = chatBox.scrollHeight;
-            chatBox.parentElement.style.animation = 'containerBounce 0.5s ease-out';
-            setTimeout(() => chatBox.parentElement.style.animation = '', 500);
         }
 
-        // Send message and handle response
-        async function sendMessage(message, step) {
-            addMessage(message, true);
-            messageInput.value = '';
-            typingIndicator.style.display = 'flex';
+        function showTyping(show) {
+            document.getElementById('typing-indicator').style.display = show ? 'block' : 'none';
+        }
 
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, step })
-                });
-                const data = await response.json();
+        function updateProgress(state) {
+            const steps = document.querySelectorAll('.progress-step');
+            const connector = document.querySelector('.progress-connector');
+            const index = stateMap[state] || 0;
+            steps.forEach((step, i) => {
+                step.classList.toggle('active', i <= index);
+            });
+            connector.classList.toggle('active', index > 0);
+        }
+
+        function renderOptions(options) {
+            const optionsDiv = document.getElementById('quick-options');
+            optionsDiv.innerHTML = '';
+            if (currentState === 9) { // CONFIRM state
+                options = ['Yes', 'No', 'Track', 'Safety', 'Trends', 'Language Change', 'Signout'];
+            } else if (currentState === 10) { // POST_SUBMISSION state
+                options = ['Track', 'Safety', 'Trends', 'New', 'Language Change', 'Signout'];
+            } else {
+                return; // No options for other states
+            }
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    const command = opt === 'Language Change' ? 'lang' : opt === 'Signout' ? 'signout' : opt.toLowerCase();
+                    addMessage(command, 'user'); // Show the clicked option in chat
+                    sendMessage(command); // Send it to the chatbot
+                };
+                optionsDiv.appendChild(btn);
+                gsap.from(btn, { opacity: 0, x: -10, duration: 0.3, ease: 'power1.out' });
+            });
+        }
+
+        function sendMessage(action = 'next') {
+            const input = document.getElementById('message-input');
+            const message = action === 'next' ? input.value.trim() : action; // Use action if provided, else input
+            const sendButton = document.getElementById('send-button');
+
+            if (!message) return;
+
+            if (action === 'next') {
+                addMessage(message, 'user'); // Only add typed message for 'next'
+                input.value = '';
+            }
+
+            sendButton.disabled = true;
+            showTyping(true);
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, step: currentState, action })
+            })
+            .then(response => response.json())
+            .then(data => {
                 setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-                    addMessage(data.response, false);
-                    currentStep = data.next_step;
-                    updateProgress(stepIndex + 1);
-                    if (currentStep === 'done') {
-                        confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
-                        if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
-                        new Audio('https://www.soundjay.com/button/beep-01a.mp3').play();
-                    } else if (currentStep === 'error') {
-                        messageInput.disabled = true;
-                        setTimeout(() => location.reload(), 5000);
+                    showTyping(false);
+                    addMessage(data.response, 'bot');
+                    currentState = data.state;
+                    updateProgress(currentState);
+                    renderOptions(data.options || []);
+                    sendButton.disabled = false;
+                    if (currentState === 0) { // LOGIN state after signout
+                        window.location.reload(); // Refresh page to reset UI
                     }
                 }, 1000);
-            } catch (error) {
-                typingIndicator.style.display = 'none';
-                addMessage("Error: Could not connect. Try again.", false);
-            }
+            })
+            .catch(() => {
+                showTyping(false);
+                addMessage('Error: Could not connect. Please try again.', 'bot');
+                sendButton.disabled = false;
+            });
         }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = messageInput.value.trim();
-            if (!message) return;
-            await sendMessage(message, currentStep);
+        document.getElementById('message-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage('next');
         });
 
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') form.dispatchEvent(new Event('submit'));
-        });
+        document.getElementById('message-input').focus();
     </script>
 </body>
 </html>
