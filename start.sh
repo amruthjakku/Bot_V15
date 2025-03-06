@@ -1,4 +1,3 @@
 #!/bin/bash
-cd interfaces/web && gunicorn app:app &
-cd ../telegram && python bot.py
-
+cd interfaces/web && gunicorn app:app &  
+cd /opt/render/project/src/interfaces/telegram && python bot.py
