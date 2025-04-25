@@ -4,191 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybercrime Reporting Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #f4f7fa;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .chat-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 700px;
-            padding: 20px;
-            border: 1px solid #e2e8f0;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #2b6cb0;
-        }
-        .progress-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .progress-step {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            color: #718096;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background 0.3s ease, transform 0.5s ease;
-            margin: 0 12px;
-            z-index: 1;
-        }
-        .progress-step.active {
-            background: #2b6cb0;
-            color: white;
-            transform: rotate(360deg);
-        }
-        .progress-connector {
-            position: absolute;
-            height: 2px;
-            background: #e2e8f0;
-            top: 50%;
-            left: 40px;
-            right: 40px;
-            transform: translateY(-50%);
-            transition: background 0.3s ease;
-        }
-        .progress-connector.active {
-            background: #2b6cb0;
-        }
-        #chat-box {
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #fff;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 10px 15px;
-            border-radius: 8px;
-            max-width: 80%;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .bot-message {
-            background: #edf2f7;
-            color: #4a5568;
-        }
-        .user-message {
-            background: #2b6cb0;
-            color: white;
-            margin-left: auto;
-            text-align: right;
-        }
-        #typing-indicator {
-            display: none;
-            color: #718096;
-            font-style: italic;
-            margin-top: 10px;
-        }
-        .input-area {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        #message-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.3s ease;
-        }
-        #message-input:focus {
-            border-color: #2b6cb0;
-            outline: none;
-        }
-        #send-button {
-            padding: 10px 20px;
-            background: #2b6cb0;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: background 0.3s ease;
-        }
-        #send-button:hover {
-            background: #1c528a;
-        }
-        .option-btn {
-            padding: 8px 16px;
-            background: #e2e8f0;
-            color: #4a5568;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .option-btn:hover {
-            background: #cbd5e0;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { overflow-x: hidden; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .message { margin-bottom: 10px; padding: 8px; border-radius: 4px; }
+        .bot-message { background: #d1e7f5; }
+        .user-message { background: #f0f0f0; text-align: right; }
+        #chat-box { max-height: 400px; overflow-y: auto; }
+        #typing-indicator { display: none; }
+        .progress-circle { transition: all 0.3s ease; }
+        .progress-circle.active { background: #1f5e9e; color: white; }
     </style>
 </head>
-<body>
-    <div class="chat-container">
-        <div class="header">
-            <h1>Cybercrime Reporting Service</h1>
+<body class="bg-[#f4fbfc] min-h-screen flex flex-col font-sans">
+    <!-- Header -->
+    <header class="bg-[#1f5e9e] text-white shadow-md">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+            <div class="font-extrabold text-lg leading-none select-none">Cybercrime Reporting Service</div>
+            <nav class="space-x-6 text-sm font-normal select-none">
+                <a href="#" id="home-link" class="hover:text-gray-200">Home</a>
+                <a href="#" id="report-link" class="hover:text-gray-200">Report Incident</a>
+                <a href="#" id="track-link" class="hover:text-gray-200">Track Case</a>
+                <a href="#" id="safety-link" class="hover:text-gray-200">Safety Tips</a>
+                <a href="#" id="contact-link" class="hover:text-gray-200">Contact</a>
+            </nav>
         </div>
-        <div class="progress-bar">
-            <div class="progress-connector"></div>
-            <div class="progress-step active" data-step="0">1</div>
-            <div class="progress-step" data-step="1">2</div>
-            <div class="progress-step" data-step="2">3</div>
-            <div class="progress-step" data-step="3">4</div>
-            <div class="progress-step" data-step="4">5</div>
-            <div class="progress-step" data-step="5">6</div>
-            <div class="progress-step" data-step="6">7</div>
-            <div class="progress-step" data-step="7">8</div>
-            <div class="progress-step" data-step="8">9</div>
-            <div class="progress-step" data-step="9">10</div>
+    </header>
+
+    <main class="flex flex-1 max-w-7xl mx-auto w-full px-6 py-8 space-x-6 fade-in">
+        <!-- Sidebar -->
+        <aside class="w-48 flex-shrink-0 select-none">
+            <div class="text-[#1f5e9e] font-semibold mb-3 text-base">Quick Links</div>
+            <nav class="flex flex-col space-y-2 text-sm text-gray-700">
+                <a href="#" id="faq-link" class="hover:text-[#1f5e9e]">FAQ</a>
+                <a href="#" id="resources-link" class="hover:text-[#1f5e9e]">Resources</a>
+                <a href="#" id="trends-link" class="hover:text-[#1f5e9e]">Cybercrime Trends</a>
+                <a href="#" id="support-link" class="hover:text-[#1f5e9e]">Support</a>
+                <a href="#" id="login-link" class="hover:text-[#1f5e9e]">Login/Register</a>
+            </nav>
+        </aside>
+
+        <!-- Content -->
+        <section class="flex-1 bg-white rounded-lg shadow-sm p-6">
+            <div class="bg-[#f7fefe] rounded-lg p-6 transition-shadow duration-300 ease-in-out">
+                <h2 class="text-[#1f5e9e] font-semibold text-xl mb-10 select-none">Incident Reporting Assistant</h2>
+                <!-- Progress bar -->
+                <div class="relative mb-10" aria-label="Progress steps 1 to 10">
+                    <div class="absolute top-4 left-10 right-10 h-[1px] bg-gray-300"></div>
+                    <div class="flex justify-between relative z-10 max-w-[520px] mx-auto">
+                        <div class="progress-circle active w-8 h-8 rounded-full flex items-center justify-center text-sm select-none" data-step="0" aria-current="step" aria-label="Step 1">1</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="1" aria-label="Step 2">2</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="2" aria-label="Step 3">3</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="3" aria-label="Step 4">4</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="4" aria-label="Step 5">5</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="5" aria-label="Step 6">6</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="6" aria-label="Step 7">7</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="7" aria-label="Step 8">8</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="8" aria-label="Step 9">9</div>
+                        <div class="progress-circle w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm select-none" data-step="9" aria-label="Step 10">10</div>
+                    </div>
+                </div>
+
+                <div id="chat-box" class="bg-[#e6f0f5] rounded-md p-4 mb-6 text-gray-700 text-sm select-text">
+                    <div class="message bot-message">
+                        Welcome to the Cybercrime Reporting Service. Please login (username|password) or type 'register' to sign up:
+                    </div>
+                </div>
+
+                <div id="typing-indicator" class="text-gray-600 text-sm font-italic mt-2">Typing...</div>
+
+                <div class="flex space-x-2 mt-6">
+                    <input type="text" id="message-input" placeholder="Type your response here..." class="flex-1 border border-[#1f5e9e] rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1f5e9e] transition-shadow duration-300" aria-required="true" aria-describedby="responseHelp">
+                    <button id="send-button" class="bg-[#1f5e9e] text-white font-semibold px-5 rounded-md hover:bg-[#174a7a] transition-colors duration-300" onclick="sendMessage('next')">Send</button>
+                </div>
+                <p id="responseHelp" class="sr-only">Enter your response and press Send to submit.</p>
+
+                <div class="mt-4 flex gap-2 flex-wrap" id="quick-options"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg max-w-lg w-full">
+            <h3 id="modal-title" class="text-xl font-semibold mb-4"></h3>
+            <div id="modal-content" class="text-gray-700"></div>
+            <button id="close-modal" class="mt-4 bg-[#1f5e9e] text-white px-4 py-2 rounded hover:bg-[#174a7a]">Close</button>
         </div>
-        <div id="chat-box">
-            <div class="message bot-message">
-                Welcome to the Cybercrime Reporting Service. Please login (username|password) or type 'register' to sign up:
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#1f5e9e] text-white text-center py-6 mt-auto select-none shadow-inner">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="font-semibold mb-2">© 2025 Cybercrime Reporting Service. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 text-sm font-normal">
+                <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-300">Terms of Service</a>
+                <a href="#" class="hover:text-gray-300">Contact Us</a>
             </div>
         </div>
-        <div id="typing-indicator">Typing...</div>
-        <div class="input-area">
-            <input type="text" id="message-input" placeholder="Type your response here..." autocomplete="off">
-            <button id="send-button" onclick="sendMessage('next')">Send</button>
-        </div>
-        <div class="mt-2 flex gap-2 flex-wrap" id="quick-options"></div>
-    </div>
+    </footer>
 
     <script>
         let currentState = 0; // LOGIN state
-        const stateMap = { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10 }; // Maps states to progress steps
 
         function addMessage(text, type = 'bot') {
             const chatBox = document.getElementById('chat-box');
@@ -205,13 +127,10 @@
         }
 
         function updateProgress(state) {
-            const steps = document.querySelectorAll('.progress-step');
-            const connector = document.querySelector('.progress-connector');
-            const index = stateMap[state] || 0;
+            const steps = document.querySelectorAll('.progress-circle');
             steps.forEach((step, i) => {
-                step.classList.toggle('active', i <= index);
+                step.classList.toggle('active', i <= state);
             });
-            connector.classList.toggle('active', index > 0);
         }
 
         function renderOptions(options) {
@@ -226,12 +145,12 @@
             }
             options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn';
+                btn.className = 'bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-300';
                 btn.textContent = opt;
                 btn.onclick = () => {
                     const command = opt === 'Language Change' ? 'lang' : opt === 'Signout' ? 'signout' : opt.toLowerCase();
-                    addMessage(command, 'user'); // Show the clicked option in chat
-                    sendMessage(command); // Send it to the chatbot
+                    addMessage(command, 'user');
+                    sendMessage(command);
                 };
                 optionsDiv.appendChild(btn);
                 gsap.from(btn, { opacity: 0, x: -10, duration: 0.3, ease: 'power1.out' });
@@ -240,13 +159,13 @@
 
         function sendMessage(action = 'next') {
             const input = document.getElementById('message-input');
-            const message = action === 'next' ? input.value.trim() : action; // Use action if provided, else input
+            const message = action === 'next' ? input.value.trim() : action;
             const sendButton = document.getElementById('send-button');
 
             if (!message) return;
 
             if (action === 'next') {
-                addMessage(message, 'user'); // Only add typed message for 'next'
+                addMessage(message, 'user');
                 input.value = '';
             }
 
@@ -267,8 +186,8 @@
                     updateProgress(currentState);
                     renderOptions(data.options || []);
                     sendButton.disabled = false;
-                    if (currentState === 0) { // LOGIN state after signout
-                        window.location.reload(); // Refresh page to reset UI
+                    if (currentState === 0) {
+                        window.location.reload();
                     }
                 }, 1000);
             })
@@ -284,6 +203,124 @@
         });
 
         document.getElementById('message-input').focus();
+
+        // Modal functions
+        function openModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('modal').classList.add('hidden');
+        });
+
+        // Header link event listeners
+        document.getElementById('home-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo(0, 0);
+        });
+
+        document.getElementById('report-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            fetch('/start_report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    addMessage(data.response, 'bot');
+                    currentState = data.state;
+                    updateProgress(currentState);
+                } else if (data.message) {
+                    openModal('Login Required', data.message);
+                }
+            })
+            .catch(() => {
+                openModal('Error', 'Could not connect to the server.');
+            });
+        });
+
+        document.getElementById('track-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            fetch('/track')
+            .then(response => response.json())
+            .then(data => {
+                if (data.reports) {
+                    openModal('Your Reports', data.reports);
+                } else if (data.message) {
+                    openModal('Login Required', data.message);
+                }
+            })
+            .catch(() => {
+                openModal('Error', 'Could not connect to the server.');
+            });
+        });
+
+        document.getElementById('safety-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            fetch('/safety')
+            .then(response => response.json())
+            .then(data => {
+                openModal('Safety Tips', data.safety);
+            })
+            .catch(() => {
+                openModal('Error', 'Could not connect to the server.');
+            });
+        });
+
+        document.getElementById('contact-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('Contact Us', 'You can contact us at support@cybercrime.gov.in');
+        });
+
+        // Sidebar link event listeners
+        document.getElementById('faq-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            const faqContent = `
+                <p><strong>Q: How do I report an incident?</strong></p>
+                <p>A: Use the Report Incident feature to start a new report.</p>
+                <p><strong>Q: How can I track my case?</strong></p>
+                <p>A: After logging in, use the Track Case feature to view your reports.</p>
+            `;
+            openModal('FAQ', faqContent);
+        });
+
+        document.getElementById('resources-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            const resourcesContent = `
+                <p>Here are some useful resources:</p>
+                <ul>
+                    <li><a href="https://cybercrime.gov.in" target="_blank">Cybercrime Portal</a></li>
+                    <li><a href="https://www.cybersafe.com" target="_blank">Cyber Safety Tips</a></li>
+                </ul>
+            `;
+            openModal('Resources', resourcesContent);
+        });
+
+        document.getElementById('trends-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            fetch('/trends')
+            .then(response => response.json())
+            .then(data => {
+                openModal('Cybercrime Trends', data.trends);
+            })
+            .catch(() => {
+                openModal('Error', 'Could not connect to the server.');
+            });
+        });
+
+        document.getElementById('support-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('Support', 'For support, please email support@cybercrime.gov.in');
+        });
+
+        document.getElementById('login-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('message-input').focus();
+            addMessage('Please login (username|password) or type "register" to sign up:', 'bot');
+        });
     </script>
 </body>
 </html>
