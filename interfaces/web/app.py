@@ -319,11 +319,26 @@ def generate_followup(incident: str, instruction: str) -> str:
 def classify_incident(incident: str) -> str:
     try:
         model = genai.GenerativeModel("gemini-1.5-pro")
-        prompt = (
-            "Classify this cybercrime incident into a specific category (e.g., phishing, hacking, fraud, cyberbullying, malware, identity theft, "
-            "online harassment, data breach, ransomware, social engineering, etc.). Provide a single category name based on the details below:\n"
-            f"Incident: \"{incident}\"\n"
-            "Return only the category name."
+        prompt = ("You are a seasoned cybercrime classification assistant. "
+    "Your job is to read the incident description below and assign it to *exactly one* of the categories in the taxonomy. "
+    "Choose the one that most precisely captures the attacker’s technique or victim impact. "
+    "If several fit, pick the most specific. "
+    "Do *not* output any explanations or extra text—just the category name exactly as listed.\n\n"
+    "📋 *Categories:*\n"
+    "- Phishing\n"
+    "- Hacking\n"
+    "- Fraud\n"
+    "- Cyberbullying\n"
+    "- Malware\n"
+    "- Ransomware\n"
+    "- Identity Theft\n"
+    "- Online Harassment\n"
+    "- Data Breach\n"
+    "- Social Engineering\n"
+    "- Other\n\n"
+    f"🔍 *Incident Description:*\n\"{incident}\"\n\n"
+    "⏺️ *Output:*\n"
+    "Category:"
         )
         response = model.generate_content(prompt)
         crime_type = response.text.strip().lower()
